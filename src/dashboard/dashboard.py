@@ -27,6 +27,7 @@ def get_report():
 st.title("Détection de fraude")
 st.header("🎯Tableau de bord")
 
+st.page_link("http://localhost:3000/", label = "Grafana métrics 🏃‍➡️")
 
 placeholder = st.empty()
 list_pourcent_fraude = []

@@ -1,6 +1,7 @@
 services:
   # Conteneur recepteur
   api-recepteur:
+    container_name: apirecepteur
     build: .
     env_file: .env
     volumes:
@@ -11,6 +12,7 @@ services:
 
   # conteneur envoi
   stream-envoi:
+    container_name: streamenvoi
     build: .
     environment:
       - API_URL=http://api-recepteur:8000
@@ -25,6 +27,7 @@ services:
 
   # streamlit
   dashboard:
+    container_name: dashboard
     build: .
     env_file: .env
     depends_on:
@@ -36,3 +39,44 @@ services:
       - ./src:/app/src
     ports:
       - "${DASHBOARD_PORT}:${DASHBOARD_PORT}"
+
+  # promotheus, grafana et cadvisor pour le monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: unless-stopped #prometheus restarts automatically if it crashes or the system reboots
+    env_file: .env
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    env_file: .env
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+
+
+volumes:
+  grafana-storage:
