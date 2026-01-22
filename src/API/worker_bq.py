@@ -18,7 +18,7 @@ except redis.exceptions.ConnectionError:
 print("Le Worker est démarré et surveille la file d'attente...")
 
 # infos pour BigQuery 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "src/API/gcp-key.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcp-key.json"
 client = bigquery.Client()
 table_id = "projet-fraude-paysim.paysim_raw.predictions_transaction"
 
