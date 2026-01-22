@@ -26,18 +26,35 @@ class TransmissionRequest(BaseModel):
     nameDest: str
     oldbalanceDest: float
     newbalanceDest: float
+    isFraud: int #Uniquement pour connaitre la verite terrain. En tant normal, on aurait un retour client
     isFlaggedFraud: int
+ # Initialisation de la matrice de confusion   
+matrix_stats = {"vrais_positifs": 0,
+                        "faux_positifs": 0, 
+                        "vrais_negatifs": 0, 
+                        "faux_negatifs": 0}
     
 #Réception et traitement des donnees! Prediciton se fera ioci   
 @app.post("/predict")
 async def recevoir_transaction(transaction: TransmissionRequest):
     #Conversion json en DataFrame
     df = pd.DataFrame([transaction.dict()])
+    realite = df.pop('isFraud').iloc[0]
     # Manipulation des données pour correspondre au modèle
     df['hour'] = df['step'] % 24
     df['nameOrig'] = df['nameOrig'].str[0]
     df['nameDest'] = df['nameDest'].str[0]
     prediction = pipeline.predict(df)
+    
+    # Maj pour matrice de confusion
+    if prediction == 0 and realite == 0: 
+        matrix_stats["vrais_negatifs"] += 1
+    elif prediction == 1 and realite == 0: 
+        matrix_stats["faux_positifs"] += 1
+    elif prediction == 0 and realite == 1: 
+        matrix_stats["faux_negatifs"] += 1
+    elif prediction == 1 and realite == 1: 
+        matrix_stats["vrais_positifs"] += 1
         
     verdict = "FRAUDE" if prediction[0] == 1 else "SAIN"
     infos["nb_transactions"] += 1
@@ -61,9 +78,12 @@ async def get_report():
         "nb_fraudes_detectees": len(frauds_detected),
         "details": frauds_detected,
         "infos": infos,
+        "matrix": matrix_stats
     }
 
 
+
+# Pour le rechargement du modèle
 @app.get("/reload")
 async def reload_model():
     global pipeline
