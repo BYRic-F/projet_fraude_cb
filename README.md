@@ -26,6 +26,26 @@ Ce projet est un travail d'équipe réalisé dans le cadre de la formation DATA 
    docker system prune -f
     ```
 
+# COmment réinitialiser tout à 0 :
+
+Lancer le container Redis
+
+```
+ docker exec -it redis-service redis-cli FLUSHALL
+```
+Fermer le container 
+
+Lancer bigquery pour réionitialiser la table
+
+```
+TRUNCATE TABLE paysim_raw.predictions_transaction
+```
+
+fichier src/retrain/lastcount
+=> Changer la variable a 0
+
+
+
 
 # Ouvrir streamlit
 
@@ -43,6 +63,12 @@ http://localhost:8000/docs
 uv run python src/API/streamrecepteur.py
 
 uv run uvicorn src.API.streamrecepteur:app --reload --port 8000
+
+# Pour vérifier le process de réentrainement du modèle : 
+
+```
+docker logs -f retrain-automation
+```
 
 # Structure du projet
 

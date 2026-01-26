@@ -15,7 +15,14 @@ REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 r = redis.Redis(host=REDIS_HOST, port=6379, db=0)
 
 # chargement du pipeline
-pipeline = joblib.load('src/models/pipeline_latest.joblib')
+try:
+    # version la plus récente
+    pipeline = joblib.load('src/models/pipeline_latest.joblib')
+    print("API : Dernier pipeline chargé au démarrage.")
+except Exception:
+    # Si le fichier n'existe pas encore on prend v1
+    pipeline = joblib.load('src/models/pipeline_v1.joblib')
+    print("API : Chargement de la V1 (modèle de secours).")
 
 # défini le Json attendu en entree
 class TransmissionRequest(BaseModel):
@@ -124,11 +131,16 @@ async def report():
 async def reload_model():
     global pipeline
     # On récuprer l'heure du fichier et le model le plus récent pour le versionning
-    pipeline = joblib.load('src/models/pipeline_latest.joblib')
-    timestamp = os.path.getmtime('src/models/pipeline_latest.joblib')
-    date_formatee = datetime.fromtimestamp(timestamp).strftime('%d/%m %H:%M:%S')
-    return {"status": "success", "modele_du": date_formatee}
-
+    try:
+        # On tente de charger, si ça rate on passe dans le 'except'
+        new_pipeline = joblib.load('src/models/pipeline_latest.joblib')
+        pipeline = new_pipeline
+        timestamp = os.path.getmtime('src/models/pipeline_latest.joblib')
+        date_formatee = datetime.fromtimestamp(timestamp).strftime('%d/%m %H:%M:%S')
+        return {"status": "success", "modele_du": date_formatee}
+    except Exception as e:
+        print(f"Erreur rechargement : {e}")
+        return {"status": "error", "message": "Conservation de l'ancien modèle"}
 
 
 # Pour lancer le serveur : uv run uvicorn src.API.streamrecepteur:app --reload
