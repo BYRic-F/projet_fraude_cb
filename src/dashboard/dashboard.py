@@ -268,4 +268,3 @@ if page_selection == "Tableau de bord":
     page_stats()
 elif page_selection == "Performance du modèle":
     page_performance_modele()
-    
