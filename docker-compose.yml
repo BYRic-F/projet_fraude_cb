@@ -30,6 +30,18 @@ services:
     networks:
         - pynet
 
+# retrain automatisation
+  retrain-automation:
+    container_name: retrain-automation
+    build: .
+    env_file: .env
+    depends_on:
+      - api-recepteur
+    networks:
+      - pynet
+    volumes:
+      - ./src:/app/src
+    command: ["uv", "run", "python", "src/retrain/retrain.py"]
 
   # streamlit
   dashboard:
@@ -42,7 +54,7 @@ services:
       - pynet
     environment:
       - API_URL=http://api-recepteur:8000
-    command: ["uv" ,"run","streamlit", "run", "src/dashboard/dashboard.py", "--server.address", "0.0.0.0"]
+    command: ["uv", "run", "streamlit", "run", "src/dashboard/dashboard.py", "--server.address", "0.0.0.0", "--server.runOnSave", "true"]
     volumes:
       - ./src:/app/src
     ports:

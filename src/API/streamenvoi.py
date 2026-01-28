@@ -27,4 +27,3 @@ for index, row in df.iterrows():
     response = requests.post(API, json=transaction)
     print(response.status_code)
     
-# Pour lancer le script : python src/API/streamenvoi.py
