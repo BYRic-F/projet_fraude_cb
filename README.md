@@ -26,23 +26,19 @@ Ce projet est un travail d'équipe réalisé dans le cadre de la formation DATA 
    docker system prune -f
     ```
 
-# COmment réinitialiser tout à 0 :
+# Comment réinitialiser tout à 0 :
 
-Lancer le container Redis
+1. Lancer le container Redis
 
-```
- docker exec -it redis-service redis-cli FLUSHALL
-```
-Fermer le container 
+2. Excuter la commande : ``` docker exec -it redis-service redis-cli FLUSHALL ```
 
-Lancer bigquery pour réionitialiser la table
+3. Fermer le container 
 
-```
-TRUNCATE TABLE paysim_raw.predictions_transaction
-```
+4. Lancer bigquery pour réionitialiser la table
 
-fichier src/retrain/lastcount
-=> Changer la variable a 0
+5. Excuter la commande :  : ``` TRUNCATE TABLE paysim_raw.predictions_transaction ```
+
+6. Mettre à jour le fichier src/retrain/lastcount : changer la valeur à 0
 
 
 

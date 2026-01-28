@@ -40,7 +40,8 @@ services:
     depends_on:
       - api-recepteur
     networks:
-      - pynet
+      pynet:
+        ipv4_address: 172.20.0.10
     volumes:
       - ./src:/app/src
     command: ["uv", "run", "python", "src/retrain/retrain.py"]
@@ -129,6 +130,9 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     ports:
       - "9100:9100"
+    networks:
+      pynet:
+        ipv4_address: 172.20.0.11
 
   # conteneur redis
   redis:
