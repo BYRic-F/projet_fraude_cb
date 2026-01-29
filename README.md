@@ -92,7 +92,7 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
 
  - **Dashboard Streamlit** : http://localhost:8501
 
- - **Documentation API** : http://localhost:8000/docs
+ - **Documentation API** : http://localhost:8000/docs / http://localhost:8000/report / http://localhost:8000/reload
 
  - **Monitoring Grafana** : http://localhost:3000
 
@@ -142,7 +142,7 @@ Le conteneur retrain-automation surveille la table BigQuery via Prefect.
 
 Pour remettre le projet à zéro :
 
-1. Vider Redis : ```docker exec -it redis-service redis-cli FLUSHALL```
+1. Vider Redis (les conteneurs doivent être allumés): ```docker exec -it redis-service redis-cli FLUSHALL```
 
 2. Vider BigQuery : ```TRUNCATE TABLE paysim_raw.predictions_transaction```
 
