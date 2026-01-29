@@ -3,10 +3,10 @@
 
 Ce projet a été réalisé dans le cadre de la formation Data Analyst à la Wild Code School. Il simule un flux de transactions bancaires, les analyse via un modèle de Machine Learning (XGBoost) et monitore les performances en temps réel.
 
-## 👥 L'Équipe (FJK)
-* **F** : Frédéric Bayen - *Architecture MLOps, Bigquery & Automatisation*
-* **K** : Kenji Victor - *Streamlit, Grafana & Prometheus*
-* **J** : Jean-Baptiste Leduc - *Data Visualization, Dashboards, Redis & Modélisation XGBoost*
+## 👥 L'Équipe
+* **Frédéric Bayen** - *Architecture MLOps, Bigquery & Automatisation*
+* **Kenji Victor** - *Streamlit, Grafana & Prometheus*
+* **Jean-Baptiste Leduc** - *Data Visualization, Dashboards, Redis & Modélisation XGBoost*
 
 ## Architecture du Pipeline
 
@@ -39,9 +39,9 @@ L'application repose sur une architecture micro-services conteneurisée avec Doc
       |                | (Envoi BigQuery)  |--->|  retrain.py     |
       |                +-------------------+    |  (Auto-Train)   |
       v                                         +-----------------+
-      +-------------------------------------------------+
-      | (4) Monitoring                                  |     
-      v                                                 v
+      +----------------------------------------------------------+
+      | (4) Monitoring                                           |     
+      v                                                          v
 [ SUPERVISION : Prometheus & Grafana ]             [ TABLEU DE BORD : Streamlit]
 +------------------------------------------+    +------------------------------------------+
 | - Metrics système (CPU/RAM conteneurs)   |    | dashboard.py                             |
@@ -76,25 +76,29 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
 
    - Dataset ```PaySim_stream.csv``` et ```PaySim_historical.csv``` dans le dossier ./data/ récupérés grâce à ```decoupe.py```
 
+
+
 **Installation**
 
 1. **Cloner le projet.**
 
 2. **Lancer l'infrastructure :**
 
-```docker compose up --build```
+      ```docker compose up --build```
+
+
 
 **Accès aux Services**
 
-**Dashboard Streamlit** : http://localhost:8501
+ - **Dashboard Streamlit** : http://localhost:8501
 
-**Documentation API** : http://localhost:8000/docs
+ - **Documentation API** : http://localhost:8000/docs
 
-**Monitoring Grafana** : http://localhost:3000
+ - **Monitoring Grafana** : http://localhost:3000
 
-**Prometheus** : http://localhost:9090
+ - **Prometheus** : http://localhost:9090
 
-**Processus de réentrainement** : ```docker logs -f retrain-automation```
+ - **Processus de réentrainement** : ```docker logs -f retrain-automation```
 
 ---
 
