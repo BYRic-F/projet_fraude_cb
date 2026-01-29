@@ -1,7 +1,155 @@
 
-# Application de détection de fraude aux transactions bancaires en temps réel
+# Détection de fraude bancaire en Temps Réel
 
-Ce projet est un travail d'équipe réalisé dans le cadre de la formation DATA ANALYST de la WILD CODE SCHOOL.
+Ce projet a été réalisé dans le cadre de la formation Data Analyst à la Wild Code School. Il simule un flux de transactions bancaires, les analyse via un modèle de Machine Learning (XGBoost) et monitore les performances en temps réel.
+
+## 👥 L'Équipe (FJK)
+* **F** : Frédéric Bayen - *Architecture MLOps, Bigquery & Automatisation*
+* **K** : Kenji Victor - *Streamlit, Grafana & Prometheus*
+* **J** : Jean-Baptiste Leduc - *Data Visualization, Dashboards, Redis & Modélisation XGBoost*
+
+## Architecture du Pipeline
+
+L'application repose sur une architecture micro-services conteneurisée avec Docker.
+
+```text
+[ SOURCE : Données CSV ]
+      |
+      | Lecture (streamenvoi.py)
+      v
+[ CERVEAU : Docker - API ] <---------------------------+
++-----------------------+       +-------------------+  |
+|  streamrecepteur.py   | ----> |  ML_XGBoost.ipynb |  | 
+|     (FastAPI)         | <---- |  Modèle XGBoost   |  |    
++-----------------------+       +-------------------+  |
+      |                                                |
+      | Résultats (LPUSH)                          |
+      v                                                |
+[ STOCKAGE : Docker - Redis ]                          |
++------------------------------------------+           |
+|              REDIS (Cache)               |           |
+|  - flux_global (Archive BigQuery)        |           |
+|  - flux_streamlit (Affichage direct)     |           |
++------------------------------------------+           |
+      |                     |                          |
+      |                     | Archivage                |
+      |                     v                          |
+      |                +-------------------+    [ MLOPS : Prefect ]
+      |                |   worker_bq.py    |    +-----------------+
+      |                | (Envoi BigQuery)  |--->|  retrain.py     |
+      |                +-------------------+    |  (Auto-Train)   |
+      v                                         +-----------------+
+      +-------------------------------------------------+
+      | (4) Monitoring                                  |     
+      v                                                 v
+[ SUPERVISION : Prometheus & Grafana ]             [ TABLEU DE BORD : Streamlit]
++------------------------------------------+    +------------------------------------------+
+| - Metrics système (CPU/RAM conteneurs)   |    | dashboard.py                             |
+| - Metrics business (Taux de fraude)      |    | - Dashboarding & Alerting Temps Réel     |
+| - Dashboarding & Alerting Temps Réel     |    | - EDA                                    |
++------------------------------------------+    +------------------------------------------+
+```
+
+---
+
+## Gestion des Données (Data Engineering)
+
+Le projet utilise le dataset PaySim [(disponible ici sur Kaggle)](https://www.kaggle.com/datasets/mtalaltariq/paysim-data).
+
+Pour simuler un environnement de production réel, nous avons créé un script ```decoupe.py``` pour segmenter les données :
+
+ - **90% (Historique)** : Utilisés pour l'entraînement initial et stockés comme base de référence.
+
+ - **10% (Flux Stream)** : Isolés pour simuler l'envoi de transactions ligne par ligne par streamenvoi.py.
+
+Cette méthode garantit que le modèle est testé sur des données qu'il n'a jamais rencontrées lors de sa phase d'apprentissage initiale.
+
+---
+
+## Lancement Rapide
+
+**Prérequis**
+
+   - Docker & Docker Compose installés.
+
+   - Clé Google Cloud ```gcp-key.json``` à la racine pour l'accès à BigQuery.
+
+   - Dataset ```PaySim_stream.csv``` et ```PaySim_historical.csv``` dans le dossier ./data/ récupérés grâce à ```decoupe.py```
+
+**Installation**
+
+1. **Cloner le projet.**
+
+2. **Lancer l'infrastructure :**
+
+```docker compose up --build```
+
+**Accès aux Services**
+
+**Dashboard Streamlit** : http://localhost:8501
+
+**Documentation API** : http://localhost:8000/docs
+
+**Monitoring Grafana** : http://localhost:3000
+
+**Prometheus** : http://localhost:9090
+
+**Processus de réentrainement** : ```docker logs -f retrain-automation```
+
+---
+
+## Automatisation MLOps
+
+Le conteneur retrain-automation surveille la table BigQuery via Prefect.
+
+ - Modularité : Le seuil de déclenchement (```min_rows_to_retrain```), le nombre de transactions récupéres sur BigQuery  (```limit_sql```) et l'intervalle de vérification (```check_interval_secondes```) sont modifiables sans redémarrage dans ```state.json```.
+
+ - Action : Dès que le seuil est atteint, le modèle est réentraîné sur les nouvelles données, archivé, et l'API est notifiée pour charger la nouvelle version instantanément.
+
+---
+
+## Maintenance et Réinitialisation
+
+Pour remettre le projet à zéro :
+
+1. Vider Redis : ```docker exec -it redis-service redis-cli FLUSHALL```
+
+2. Vider BigQuery : ```TRUNCATE TABLE paysim_raw.predictions_transaction```
+
+3. Reset l'automation : Mettre ```last_count``` à 0 dans le fichier ```state.json```.
+
+
+## Structure du dossier
+
+```
+├── data/                  # Datasets (CSV historiques et flux stream)
+├── grafana/               # Configuration du monitoring
+│   ├── dashboards/        # Fichiers JSON des dashboards (RAM, Principal, etc.)
+│   └── provisioning/      # Configuration automatique des sources de données
+├── notebooks/             # Travail exploratoire et recherche
+│   ├── decoupe.py         # Script de split du dataset (90/10)
+│   ├── EDA_PaySim.ipynb   # Analyse exploratoire des données
+│   └── ML_XGBoost.ipynb   # Entraînement et tests du modèle
+├── src/                   # Code source applicatif
+│   ├── API/               # streamrecepteur (FastAPI), streamenvoi et worker_bq
+│   ├── dashboard/         # Interface utilisateur Streamlit (dashboard.py)
+│   ├── ingestion/         # Scripts de traitement des données
+│   ├── models/            # Fichiers .joblib (pipeline_latest, archives)
+│   └── retrain/           # Automatisation MLOps (retrain.py)
+├── docker-compose.yml     # Orchestration des services Docker
+├── Dockerfile             # Configuration de l'image Python/UV
+├── prometheus.yml         # Configuration de la collecte des métriques
+├── state.json             # État dynamique et configuration du réentraînement
+└── README.md              # Documentation du projet
+```
+
+
+
+
+
+
+
+
 
 
 # Prérequis
