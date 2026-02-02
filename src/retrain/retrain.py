@@ -8,6 +8,13 @@ import requests
 from prefect import task, flow
 import time
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# On récupère les variables du .env
+PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+DATASET_ID = os.getenv("GCP_DATASET")
 
 # Permet de récupérer la clé GCP
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcp-key.json"
@@ -15,11 +22,11 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "gcp-key.json"
 # Creation des taches Prefect
 @task(name = "Vérifier les nouvelles données")
 def check_new_data() :
-    sql = """
+    sql = f"""
     SELECT count(*) as nombre_lignes
-    FROM `projet-fraude-paysim.paysim_raw.predictions_transaction`    
+    FROM `{PROJECT_ID}.{DATASET_ID}.predictions_transaction`    
     """
-    df = pandas_gbq.read_gbq(sql, project_id="projet-fraude-paysim")
+    df = pandas_gbq.read_gbq(sql, project_id=PROJECT_ID)
     number_lines = df['nombre_lignes'][0]
     print(number_lines)
     return number_lines
@@ -41,7 +48,7 @@ def retrain_model(nouveau_nombre_lignes):
     (SELECT 
         LEFT(nameOrig, 1) AS nameOrig, LEFT(nameDest, 1) AS nameDest,
         MOD(step, 24) AS hour, type, amount, oldbalanceOrg, oldbalanceDest, isFraud
-    FROM `projet-fraude-paysim.paysim_raw.historical_transactions`
+    FROM `{PROJECT_ID}.{DATASET_ID}.historical_transactions`
     WHERE isFraud = 1)
 
     UNION ALL
@@ -49,7 +56,7 @@ def retrain_model(nouveau_nombre_lignes):
     (SELECT 
         LEFT(nameOrig, 1) AS nameOrig, LEFT(nameDest, 1) AS nameDest,
         MOD(step, 24) AS hour, type, amount, oldbalanceOrg, oldbalanceDest, isFraud
-    FROM `projet-fraude-paysim.paysim_raw.predictions_transaction`
+    FROM `{PROJECT_ID}.{DATASET_ID}.predictions_transaction`
     WHERE isFraud = 1)
 
     UNION ALL
@@ -58,13 +65,13 @@ def retrain_model(nouveau_nombre_lignes):
     (SELECT 
         LEFT(nameOrig, 1) AS nameOrig, LEFT(nameDest, 1) AS nameDest,
         MOD(step, 24) AS hour, type, amount, oldbalanceOrg, oldbalanceDest, isFraud
-    FROM `projet-fraude-paysim.paysim_raw.historical_transactions`
+    FROM `{PROJECT_ID}.{DATASET_ID}.historical_transactions`
     WHERE isFraud = 0
     ORDER BY RAND()
     LIMIT {limite_echantillon})
     """
-    #Limite = 200 000
-    new_data = pandas_gbq.read_gbq(retrain_sql, project_id="projet-fraude-paysim")
+    
+    new_data = pandas_gbq.read_gbq(retrain_sql, project_id=PROJECT_ID)
 
     # X y
     X_new = new_data.drop('isFraud', axis=1)

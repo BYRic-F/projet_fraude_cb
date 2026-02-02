@@ -112,9 +112,17 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
 
    - Docker & Docker Compose installés.
 
-   - Clé Google Cloud ```gcp-key.json``` à la racine pour l'accès à BigQuery.
+   - **BigQuery** : - Créer un projet sur la Console Google Cloud.
 
-   - Dataset ```PaySim_stream.csv``` et ```PaySim_historical.csv``` dans le dossier ./data/ récupérés grâce à ```decoupe.py```
+                    - Activer l'API BigQuery.
+
+                    - Créer un Dataset nommé paysim_raw (ou celui défini dans votre .env).
+
+                    - Créer un compte de service avec les rôles BigQuery Admin et Storage Admin.
+
+                    - Générer une clé JSON, la nommer ```gcp-key.json``` et la placer à la racine du projet.
+
+                    - Remplir le .env avec votre GCP_PROJECT_ID.
 
 
 
@@ -122,7 +130,28 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
 
 1. **Cloner le projet.**
 
-2. **Lancer l'infrastructure :**
+2. **Télécharger le dataset PaySim [(disponible ici sur Kaggle)](https://www.kaggle.com/datasets/mtalaltariq/paysim-data).** et le placer dans ```./data/```
+
+
+2. **Copier le template des variables d'environnement**
+
+      ```cp env-dist .env```
+
+3. **Initialisation du projet (uv)**
+
+      ```uv sync```
+
+3. **Découpe du dataset**
+
+      ```uv run src/notebooks/decoupe.py```
+   
+   -> Dataset ```PaySim_stream.csv``` et ```PaySim_historical.csv``` créés dans le dossier ./data/
+
+4. **Ingestion des données historiques dans BigQuery**
+
+      ```uv run src/ingestion/ingestion.py```
+
+5. **Lancer l'infrastructure :**
 
       ```docker compose up --build```
 
