@@ -3,6 +3,7 @@ global:
 
 scrape_configs:
   - job_name: 'api-recepteur'
+    metrics_path: '/metrics'  # FastAPI expose les métriques ici
     static_configs:
       - targets: ['apirecepteur:8000']
   
