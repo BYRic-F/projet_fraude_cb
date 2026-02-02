@@ -7,6 +7,8 @@ import redis
 import json 
 import os
 from datetime import datetime
+from prometheus_fastapi_instrumentator import Instrumentator
+import time
 
 app = FastAPI()
 
@@ -139,6 +141,7 @@ async def reload_model():
         print(f"Erreur rechargement : {e}")
         return {"status": "error", "message": "Conservation de l'ancien modèle"}
 
+Instrumentator().instrument(app).expose(app)
 
 # Pour lancer le serveur : uv run uvicorn src.API.streamrecepteur:app --reload
 # Pour acceder au rapport : http://127.0.0.1:8000/report

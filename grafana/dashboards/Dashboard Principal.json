@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -31,7 +31,7 @@
       },
       "id": 15,
       "panels": [],
-      "title": "Host",
+      "title": "Hôte",
       "type": "row"
     },
     {
@@ -135,7 +135,7 @@
         "x": 3,
         "y": 1
       },
-      "id": 16,
+      "id": 20,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -161,13 +161,13 @@
             "uid": "dfbbh9gkjsow0d"
           },
           "editorMode": "code",
-          "expr": "machine_cpu_physical_cores",
+          "expr": "count(node_disk_info)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Nombre de CPU physiques",
+      "title": "Nb disques",
       "type": "stat"
     },
     {
@@ -370,6 +370,202 @@
         "x": 16,
         "y": 1
       },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(rate(node_disk_read_bytes_total[1m]))",
+          "legendFormat": "Lecture",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dfbbh9gkjsow0d"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_disk_written_bytes_total[1m]))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Ecriture",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Lecture / Ecriture du disque",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dfbbh9gkjsow0d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 26,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 8,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 7
+      },
+      "id": 19,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "round(sum(rate(node_cpu_seconds_total[1m])))",
+          "legendFormat": "Nb CPU",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Nb CPU utilisés par seconde",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "dfbbh9gkjsow0d"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 26,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 7
+      },
       "id": 17,
       "options": {
         "legend": {
@@ -416,7 +612,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 13
       },
       "id": 14,
       "panels": [],
@@ -444,11 +640,11 @@
               },
               {
                 "color": "yellow",
-                "value": 60
+                "value": 300
               },
               {
                 "color": "green",
-                "value": 120
+                "value": 600
               }
             ]
           },
@@ -460,7 +656,7 @@
         "h": 5,
         "w": 8,
         "x": 0,
-        "y": 8
+        "y": 14
       },
       "id": 4,
       "options": {
@@ -522,7 +718,7 @@
         "h": 5,
         "w": 7,
         "x": 8,
-        "y": 8
+        "y": 14
       },
       "id": 12,
       "options": {
@@ -620,7 +816,7 @@
         "h": 5,
         "w": 9,
         "x": 15,
-        "y": 8
+        "y": 14
       },
       "id": 6,
       "options": {
@@ -646,7 +842,7 @@
             "uid": "dfbbh9gkjsow0d"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{name=~\".+\"}[30s]))*100 / $nb_cpu",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name=~\".+\"}[1m]))*100 / $nb_cpu",
           "hide": false,
           "instant": false,
           "legendFormat": "__auto",
@@ -706,7 +902,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 13
+        "y": 19
       },
       "id": 18,
       "options": {
@@ -803,7 +999,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 13
+        "y": 19
       },
       "id": 5,
       "options": {
@@ -897,7 +1093,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 21
+        "y": 27
       },
       "id": 1,
       "options": {
@@ -994,7 +1190,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 21
+        "y": 27
       },
       "id": 2,
       "options": {
@@ -1126,7 +1322,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 35
       },
       "id": 8,
       "options": {
@@ -1249,7 +1445,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 35
       },
       "id": 9,
       "options": {
