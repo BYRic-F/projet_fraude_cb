@@ -4,7 +4,7 @@
 Ce projet a été réalisé dans le cadre de la formation Data Analyst à la Wild Code School. Il simule un flux de transactions bancaires, les analyse via un modèle de Machine Learning (XGBoost) et monitore les performances en temps réel.
 
 ## L'Équipe
-* **Frédéric Bayen** - *Architecture MLOps, Bigquery, Streamlit, FastAPI & Automatisation*
+* **Frédéric Bayen** - *Architecture MLOps, BigQuery, Streamlit, FastAPI & Automatisation*
 * **Kenji Victor** - *Streamlit, Grafana & Prometheus, FastAPI*
 * **Jean-Baptiste Leduc** - *Data Visualization, Streamlit Dashboards, Redis & Modélisation XGBoost*
 
@@ -19,30 +19,32 @@ Imaginez une banque digitale en pleine expansion. Chaque jour, des milliers de c
 
 Le défi posé à notre équipe : stopper la fraude sans dégrader l'expérience utilisateur.
 
- - **Rapidité absolue** : La décision (bloquer ou autoriser) doit tomber en quelques millisecondes pour ne pas ralentir le client.
+ - **Rapidité** : La décision (bloquer ou autoriser) doit être rendue en quelques millisecondes pour ne pas ralentir le client.
 
- - **Satisfaction Client** : Un "Faux Positif" (client honnête bloqué par erreur) est une catastrophe commerciale et a un coût financier non négligeable.
+ - **Satisfaction Client** : Un "Faux Positif" (client honnête bloqué par erreur) est commercialement problématique et a un coût financier non négligeable.
 
 
-**La Solution : Un système vivant et auto-adaptatif**
+**La solution : Un système vivant et auto-adaptatif**
 
 Plutôt qu'un modèle statique, nous avons conçu une infrastructure évolutive. Grâce à notre pipeline MLOps, le système apprend en continu. Dès que de nouvelles typologies de fraude apparaissent, le modèle se réentraîne automatiquement pour s'adapter aux nouvelles menaces, garantissant une protection toujours à jour.
 
 
-**Le Pilotage**
+**Le pilotage**
 
 Pour garder un contrôle total sur la solution, nous avons déployé deux centres de commandement :
 
  - Pour garder le contrôle, nous avons développé un **panneau de suivi Streamlit**. Il permet de visualiser les flux en temps réel, d'analyser les comportements suspects et de piloter la stratégie de sécurité de la banque. C'est ici que l'intelligence artificielle rencontre l'humaine.
 
- - **La supervision infrastructure (Grafana & Prometheus)** : Fidèle aux standards du Data Engineering, cette interface surveille la santé technique du système. Nous suivons en temps réel la consommation CPU/RAM de chaque conteneur et la latence de l'API pour garantir une haute disponibilité et des performances constantes sous la charge.
+ - **La supervision infrastructure (Grafana & Prometheus)** : Cette interface surveille la santé technique du système. Nous suivons en temps réel la consommation CPU/RAM de chaque conteneur et la latence de l'API pour garantir une haute disponibilité et des performances constantes sous la charge.
 
 
-**La Victoire sur la fraude**
+**Nos résultats sur la fraude**
 
 1. **Le Bouclier (Recall de 87 %)** : Nous interceptons désormais la grande majorité des tentatives de fraude.
 
-2. **Le Respect du Client (Précision de 63 %)** : Nous protégeons 99,4 % de nos clients honnêtes, tout en ciblant avec précision les fraudeurs.
+2. **La fluidité client (Spécificité de 99,4 %)** : Nous garantissons une expérience sans problème. 99,4 % des transactions légitimes sont validées instantanément, minimisant ainsi le mécontentement client.
+
+3. **L'efficacité des alertes (Précision de 63 %)** : Sur l'ensemble des transactions bloquées pour suspicion, près de 2 sur 3 sont réellement des fraudes. Ce score élevé permet aux équipes de sécurité de se concentrer sur des menaces hautement probables plutôt que de traiter un volume ingérable de fausses alertes.
 
 ---
 
@@ -51,14 +53,14 @@ Pour garder un contrôle total sur la solution, nous avons déployé deux centre
 L'application repose sur une architecture micro-services conteneurisée avec Docker.
 
 ```text
-[ SOURCE : Données CSV ]
+[ SOURCE : PaySim_stream.csv ]
       |
       | Lecture (streamenvoi.py)
       v
-[ CERVEAU : Docker - API ] <---------------------------+
+[ CERVEAU : API + Modèle ] <---------------------------+
 +-----------------------+       +-------------------+  |
 |  streamrecepteur.py   | ----> |  ML_XGBoost.ipynb |  | 
-|     (FastAPI)         | <---- |  Modèle XGBoost   |  |    
+|  (FastAPI + modèle)   | <---- |  Modèle XGBoost   |  |    
 +-----------------------+       +-------------------+  |
       |                                                |
       | Résultats (LPUSH)                              |
@@ -138,19 +140,23 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
 
  - **Processus de réentrainement** : ```docker logs -f retrain-automation```
 
+ - **Processus d'envoi vers BigQuery/** : ```docker logs -f worker-bigquery```
+
+ - **Redis** : lister les listes : ```KEYS *``` / afficher l'intégralité d'une liste : ```LRANGE liste_fraudes 0 -1```
+
 ---
 
 ## Performance du modèle (XGBoost)
 
-Compte tenu du fort déséquilibre des données (99,4 % de transactions saines vs 0,6 % de fraudes), l'Accuracy (précision globale) n'est pas un indicateur pertinent. Nous nous concentrons sur la capacité du modèle à détecter les fraudes réelles.
+Compte tenu du fort déséquilibre des données (99,87% de transactions saines vs 0,13 % de fraudes), l'Accuracy (précision globale) n'est pas un indicateur pertinent. Nous nous concentrons sur la capacité du modèle à détecter les fraudes réelles.
 
 **Résultats sur le Test Set de la v1**
 
 Métrique|Valeur|Interprétation
 | :--- | :--- | :--- |
 | **Recall** | 87 % | Le modèle identifie avec succès 87 % des tentatives de fraude. | 
-|** Précision ** | 63 % | Lorsqu'on prédit une fraude, elle est réelle dans 63 % des cas. | 
-|** F1-Score ** | 0.73 | Un excellent équilibre pour un système de détection en temps réel. | 
+|**Précision** | 63 % | Lorsqu'on prédit une fraude, elle est réelle dans 63 % des cas. | 
+|**F1-Score** | 0.73 | Un excellent équilibre pour un système de détection en temps réel. | 
 
 ---
 
@@ -158,7 +164,7 @@ Métrique|Valeur|Interprétation
 
 Le conteneur retrain-automation surveille la table BigQuery via Prefect.
 
- - Modularité : Le seuil de déclenchement (```min_rows_to_retrain```), le nombre de transactions récupéres sur BigQuery  (```limit_sql```) et l'intervalle de vérification (```check_interval_secondes```) sont modifiables sans redémarrage dans ```state.json```.
+ - Modularité : Le seuil de déclenchement (```min_rows_to_retrain```), le nombre de transactions récupérées sur BigQuery  (```limit_sql```) et l'intervalle de vérification (```check_interval_secondes```) sont modifiables sans redémarrage dans ```state.json```.
 
  - Action : Dès que le seuil est atteint, le modèle est réentraîné sur les nouvelles données, archivé, et l'API est notifiée pour charger la nouvelle version instantanément.
 
@@ -207,143 +213,15 @@ Pour remettre le projet à zéro, tapez uniquement cette CLI  : ```python reset_
 
 | Défi Technique | Impact | Solution apportée |
 | :--- | :--- | :--- |
-| **Déséquilibre des classes** | Dataset à 0.6% de fraudes, biaisant fortement les prédictions initiales. | Utilisation de `scale_pos_weight` calculé dynamiquement sur le ratio réel Fraude/Normal lors du réentraînement. |
+| **Déséquilibre des classes** | Dataset à 0.13% de fraudes, biaisant fortement les prédictions initiales. | Utilisation de `scale_pos_weight` calculé dynamiquement sur le ratio réel Fraude/Normal lors du réentraînement. |
 | **Performance de l'entraînement** | RandomForest trop lent pour l'optimisation par GridSearch (estimé à plusieurs mois). | Passage à **XGBoost (CUDA/GPU)** et utilisation de **RandomizedSearch** pour une optimisation rapide. |
+| **Optimisation du réentraînement** | Temps de calcul excessif et risques d'incompatibilité matérielle **(CUDA/GPU)** selon l'hôte.| Mise en place d'un **échantillonnage intelligent** : filtrage des données BigQuery pour entraîner sur un volume optimal, garantissant un cycle MLOps rapide et compatible CPU|
 | **Affichage Temps Réel** | Interface Streamlit statique par défaut, ne reflétant pas le flux entrant. | Boucle `while True` avec placeholders `st.empty()` pour rafraîchir les KPIs sans rechargement de page. |
-| **Saturation de Redis** | Réinitialisation du dashboard dû à chaque envoi sur BigQuery. | Mise en place d'un **double flux** : un flux persistant pour l'UI Streamlit et un autre pour l'archivage BigQuery. |
+| **Reset de Redis** | La consommation des données par le worker BigQuery vidait le cache Redis, rendant les données indisponibles pour le dashboard. | Mise en place d'un **double flux** : un flux persistant pour l'UI Streamlit et un autre pour l'archivage BigQuery. |
 | **Choix de l'Orchestrateur** | Airflow s'est révélé trop complexe et gourmand en ressources pour ce projet. | Pivot vers **Prefect**, plus léger, moderne et parfaitement adapté à notre architecture événementielle. |
-| **Apprentissage Docker** | Complexité des réseaux inter-conteneurs et des dépendances pour des novices. | Gestion rigoureuse des ordres de démarrage (`depends_on`) et isolation des réseaux internes (`networks`). |
+| **Apprentissage Docker** | Complexité des réseaux inter-conteneurs et des dépendances pour des novices. | Gestion des ordres de démarrage (`depends_on`) et isolation des réseaux internes (`networks`). |
 | **Synchronisation du Pipeline** | Risque de charger un modèle incomplet pendant l'écriture disque. | Système de **notification Push** : l'API recharge le modèle via `/reload` uniquement après confirmation de sauvegarde complète. |
-| **Data Leakage (Fuite)** | Score de performance artificiellement élevé (99.9%) via les variables `newbalance`. | **Suppression préventive** des variables "du futur" (`newbalanceOrig/Dest`). Le modèle n'utilise que le solde initial et le montant. |
+| **Data Leakage** | Score de performance artificiellement élevé (99.9%) via les variables `newbalance`. | **Suppression préventive** des variables "du futur" (`newbalanceOrig/Dest`). |
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-# Prérequis
-
-- **Docker** et **Docker Compose** installés sur votre machine.
-- Le fichier de données `PaySim_stream.csv` et `PaySim_historical.csv` placé dans le dossier `./data/`.
-
-# Lancement Fast api
-
-1. **Cloner le projet**
-2. **Lancer l'environnement avec Docker Compose :**
-
-    ```
-   docker compose up --build
-    ```
-   # arrêter le processus
-    ```
-   docker compose down
-    ```
-   # effacer le cache
-    ```
-   docker system prune -f
-    ```
-
-# Comment réinitialiser tout à 0 :
-
-1. Lancer le container Redis
-
-2. Excuter la commande : ``` docker exec -it redis-service redis-cli FLUSHALL ```
-
-3. Fermer le container 
-
-4. Lancer bigquery pour réionitialiser la table
-
-5. Excuter la commande :  : ``` TRUNCATE TABLE paysim_raw.predictions_transaction ```
-
-6. Mettre à jour le fichier src/retrain/lastcount : changer la valeur à 0
-
-
-
-
-# Ouvrir streamlit
-
-http://localhost:8501/ Dans la barre d'url'
-
-# Afficher les rapports/docu API
-
-http://localhost:8000/report
-
-http://localhost:8000/docs
-
-
-# poru lancer sans docker
-
-uv run python src/API/streamrecepteur.py
-
-uv run uvicorn src.API.streamrecepteur:app --reload --port 8000
-
-# Pour vérifier le process de réentrainement du modèle : 
-
-```
-docker logs -f retrain-automation
-```
-
-# Structure du projet
-
-```
-fjbk-fraud-detection/
-├── data/                  # Stockage des datasets bruts et transformés (ignorer via .gitignore)
-├── docs/                  # Documentation technique et choix du dataset
-├── /grafana               # Configuration du monitoring avec Grafana
-│   ├── /dashboards        # Exports des dashboards depuis Grafana
-│   └── /provisioning      # Configuration du provisioning
-│       ├── /dashboards    # Fichiers de déclaration
-│       └── /datasources   # Fichiers de sources de données
-├── model/                 # Stockage modèle, preprocessor
-├── notebooks/             # EDA et Visualisation 
-├── src/                   # Code source modulaire
-│   ├── ingestion/         # Scripts pour lire les données 
-│   ├── API                # API
-│   ├── processing/        # Nettoyage et Feature Engineering 
-│   ├── models/            # Entraînement et évaluation (ML)
-│   └── dashboard/         # Interface Streamlit 
-├── tests/                 # Tests unitaires pour le pipeline 
-├── requirements.txt       # Bibliothèques
-└── README.md              # Guide du projet et méthodologie
-
-
-
-# redis 
-
-1. faire un uv lock afin de modifier le Dockerfil
-
-2. pour se connecter au conteneur redis:
-   => docker exec -it redis-service redis-cli
-    
-   pour lister les listes dans le redis 
-   => KEYS *
-
-   pour vider toutes les listes redis (les conteneurs doivent être allumés)
-   => docker exec -it redis-service redis-cli FLUSHALL
-
-3. lancer manuellement streamenvoi
-   => python src/API/streamenvoi.py
-
-4. pour afficher l'intégralité de la liste
-   => LRANGE liste_fraudes 0 -1 
-
-5. LOGS dans BASH: afin d'obtenir "ALERTE" dès que redis reçoit une fraude
-   => docker-compose logs -f api-recepteur | grep "ALERTE"
-   récupérer les LOGS worker-bigquery
-   => docker logs -f worker-bigquery
-
-6. pour arrêter les contenurs Docker:
-   => docker-compose stop
-
-   pour supprimer les volumes persistans (suppression aussi de la configuration redis)
-   => docker-compose down -v
-
-7. Supprimer dans bigquery : TRUNCATE TABLE `paysim_raw.predictions_transaction`
