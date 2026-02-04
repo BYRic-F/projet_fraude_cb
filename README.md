@@ -39,7 +39,7 @@ Pour garder un contrôle total sur la solution, nous avons déployé deux centre
 
  - **La supervision infrastructure (Grafana & Prometheus)** : Cette interface surveille la santé technique du système. Nous suivons en temps réel la consommation CPU/RAM de chaque conteneur et la latence de l'API pour garantir une haute disponibilité et des performances constantes sous la charge.
 
- ![Monitoring Grafana](images/grafana.gif)
+ ![Monitoring Grafana](images/grafanaa.gif)
 
 
 ### Nos résultats sur la fraude
