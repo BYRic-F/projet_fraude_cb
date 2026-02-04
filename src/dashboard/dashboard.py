@@ -549,7 +549,7 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
 
         with col2:      
             with st.container(border=True):
-                st.image("images/pie_chart_fraude.png", width=700)
+                st.image("images/pie_chart_fraude.png", width=715)
                 st.markdown("##### 2. Proportion de transactions frauduleuses")
                 st.markdown("Le graphique circulaire montre que les transactions frauduleuses sur les données de productions constituent une très faible proportion du total des transactions (0.1%).")
                 st.write("")
@@ -570,6 +570,7 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
 
         with col2a:
             with st.container(border=True):
+                st.write(" ")
                 st.write(" ")
                 st.write(" ")
                 st.image("images/histogramme_final.png", width=705)
