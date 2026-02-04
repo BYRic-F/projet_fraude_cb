@@ -225,26 +225,26 @@ def page_stats():
 
 @st.fragment(run_every=1)
 def page_performance_modele():
-    #placeholder2 = st.empty()
-    
-    if "current_version_id" not in st.session_state:
-        st.session_state.current_version_id = None
-    
-    #while True:
     reload_data = get_reload()
+    
     if reload_data and reload_data.get("status") == "success":
         new_id = reload_data.get("version_id")
         
-        if st.session_state.current_version_id is not None and new_id != st.session_state.current_version_id:
+        # 1. Si c'est le tout premier run, on enregistre l'ID sans notifier
+        if "current_version_id" not in st.session_state:
+            st.session_state.current_version_id = new_id
+        
+        # 2. Si l'ID change par rapport à celui stocké, on déclenche le toast
+        elif new_id != st.session_state.current_version_id:
             st.toast(f"Modèle XGBoost réentraîné ! ({reload_data['modele_du']})", icon="✅")
-        st.session_state.current_version_id = new_id
+            st.session_state.current_version_id = new_id # Mise à jour uniquement ici
     
     
     #with placeholder2.container():
     coltitle1, coltitle2, coltitle3 = st.columns([4,6,2])
     with coltitle2:
         st.title("Performance du modèle")
-    coltitlee1, coltitlee2, coltitlee3 = st.columns([6,6,6])
+    coltitlee1, coltitlee2, coltitlee3 = st.columns([6.2,5.5,7])
     with coltitlee2:
         if reload_data and reload_data.get("status") == "success":
             st.info(f"🛡️ **Modèle en production** | Version du : {reload_data['modele_du']}")
