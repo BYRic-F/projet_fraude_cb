@@ -35,7 +35,7 @@ Pour garder un contrôle total sur la solution, nous avons déployé deux centre
 
  - Pour garder le contrôle, nous avons développé un **panneau de suivi Streamlit**. Il permet de visualiser les flux en temps réel, d'analyser les comportements suspects et de piloter la stratégie de sécurité de la banque. C'est ici que l'intelligence artificielle rencontre l'humaine.
 
-![Détection de fraudes](images/streamlit_fraude.gif)
+![Détection de fraudes](images/streamlit_fraudes.gif)
 
  - **La supervision infrastructure (Grafana & Prometheus)** : Cette interface surveille la santé technique du système. Nous suivons en temps réel la consommation CPU/RAM de chaque conteneur et la latence de l'API pour garantir une haute disponibilité et des performances constantes sous la charge.
 
