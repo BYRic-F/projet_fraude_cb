@@ -86,7 +86,10 @@ def retrain_model(nouveau_nombre_lignes):
     # Calcul ratio dynamique
     count_norm = (y_new == 0).sum()
     count_fraud = (y_new == 1).sum()
-    new_ratio = count_norm / count_fraud
+    ratio_brut = count_norm / count_fraud
+    #Ajustement car sinon trop de fraudes dans l'échantillon de réentrainement
+    coeff_ajustement = 0.05
+    new_ratio = ratio_brut * coeff_ajustement
     
     # Recup les parametre de l'ancien mod_le
     pipeline.set_params(

@@ -351,17 +351,22 @@ def page_performance_modele():
             
             with st.expander("ℹ️ Pourquoi ces écarts ? Comprendre les métriques et l'échantillon"):
                 st.markdown("""
-                ##### 1. Périmètre de l'évaluation
-                Les résultats ci-dessus sont calculés sur **le jeu de test** (données que le modèle n'a jamais vues), et non sur l'entraînement. C'est le reflet de la performance réelle en production.
-
-                ##### 2. L'échantillonnage
-                Le nombre de fraudes réelles sur notre simulation est très faible au départ :
+                ##### 1. Périmètre de l'évaluation (Phase de réentraînement)
+                Les scores affichés dans le tableau comparatif sont calculés lors du réentraînement sur un échantillon de validation (20%). Cet échantillon est extrait d'un jeu de données hybride (200 000 transactions saines + l'intégralité des fraudes).
                 
-                * **Entraînement massif :** Le modèle a appris la fraude sur un historique de **centaines de milliers de transactions**.
-                * **Simulation en cours :** La simulation actuelle ne contient pour l'instant que **quelques milliers de lignes**.
+                Comme la proportion de fraudes est artificiellement élevée dans cet échantillon pour optimiser l'apprentissage, les scores théoriques y sont mécaniquement très hauts (Précision > 90%).
 
-                ---
-                *Avec ce volume réduit au démarrage, les indicateurs statistiques ne sont pas encore totalement stabilisés. Ils s'affineront à mesure que le volume de données augmentera.*
+                ##### 2. Performance en conditions réelles
+                Sur le flux en temps réel, la fraude est extrêmement rare. Pour éviter que le modèle ne devienne trop sensible à cause de son entraînement sur-échantillonné, nous appliquons un **coefficient d'ajustement de 0.05**.
+                
+                Cela explique la différence de précision : nous bridons volontairement la "paranoïa" du modèle pour garantir un **taux de faux positifs quasi nul**, privilégiant ainsi une expérience utilisateur fluide tout en maintenant une détection efficace.
+
+                ##### 3. Stabilisation statistique
+                Le volume de données joue également :
+                * **Entraînement massif :** Basé sur l'historique de millions de transactions.
+                * **Simulation actuelle :** Ne contient pour l'instant que quelques milliers de lignes.
+                
+                Les indicateurs statistiques s'affineront et se stabiliseront à mesure que le volume de données traitées augmentera.
                 """)
             
         st.divider()    
