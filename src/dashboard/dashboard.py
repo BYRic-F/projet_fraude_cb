@@ -628,7 +628,7 @@ suggère l'existence d'un **plafond transactionnel** fréquemment atteint par le
             st.markdown("### <u> Flux de données</u>", text_alignment="center", unsafe_allow_html=True)
             st.write("")
             st.markdown("#### Architecture du pipeline de détection de fraude en temps réel", text_alignment="center", unsafe_allow_html=True)
-            st.image("images/pipeline.png", width=1000)
+            st.image("images/pipeline2.png", width=1000)
 
 # --------------------------- ONGLET L'EQUIPE -----------------------------
 
