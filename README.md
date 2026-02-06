@@ -204,7 +204,7 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
 
  - **Processus de réentrainement (Prefect)** : http://localhost:4200/dashboard
 
- - **Processus d'envoi vers BigQuery/** : ```docker logs -f worker-bigquery```
+ - **Processus d'envoi vers BigQuery** : ```docker logs -f worker-bigquery```
 
  - **Redis** : lister les listes : ```KEYS *``` / afficher l'intégralité d'une liste : ```LRANGE liste_fraudes 0 -1```
 
