@@ -90,8 +90,8 @@ with st.sidebar:
         options=["Tableau de bord", "Performance du modèle", "Le projet"],
         icons=["speedometer2", "graph-up-arrow", "book"], 
         menu_icon="cast")
-    st.link_button("⚡ Accéder au Monitoring", "http://localhost:3000/", use_container_width=True)
-    
+    st.link_button("⚡ Accéder au Monitoring", "http://localhost:3000/", width = "stretch")
+    st.link_button("⚙️ MLOps & Automatisation", "http://localhost:4200/dashboard", width = "stretch")
 #---------- PAge stats    
 #actualisation de la vue en temps réel
 
@@ -192,6 +192,15 @@ def page_stats():
                                 cmap=cmap_pastel, 
                                 vmin=50, 
                                 vmax=100), use_container_width=True)
+            st.write("")
+            with st.expander("ℹ️ Comprendre le score de confiance (Probabilité)"):
+                st.markdown("""
+                **Ce score n'est pas une simple réponse Oui/Non.**
+                
+                Il représente la **probabilité** estimée par le modèle que la transaction soit frauduleuse (ce qu'on appelle `predict_proba` en Data Science).
+                > *Plus le score est proche de 100%, plus les motifs de cette transaction ressemblent à des fraudes passées.*
+                """)
+                
             # GRaphiques
             
             st.divider()
