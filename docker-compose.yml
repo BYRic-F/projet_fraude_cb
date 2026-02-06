@@ -32,20 +32,41 @@ services:
       pynet:
         ipv4_address: 172.20.0.3
 
-# retrain automatisation
+  # retrain automatisation
   retrain-automation:
     container_name: retrain-automation
     build: .
     env_file: .env
     depends_on:
       - api-recepteur
+      - prefect-server
     networks:
       pynet:
         ipv4_address: 172.20.0.10
     volumes:
       - ./src:/app/src
       - ./state.json:/app/state.json
+    environment:
+      - PREFECT_API_URL=http://prefect-server:4200/api
     command: ["uv", "run", "python", "src/retrain/retrain.py"]
+
+  # conteneur prefect server
+  prefect-server:
+    image: prefecthq/prefect:3-python3.12
+    container_name: prefect-server
+    restart: always
+    volumes:
+      - prefect_data:/root/.prefect
+    entrypoint: ["prefect", "server", "start"]
+    environment:
+      - PREFECT_UI_ENABLED=true
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+    ports:
+      - "4200:4200"
+    networks:
+      pynet:
+        ipv4_address: 172.20.0.12
 
   # streamlit
   dashboard:
@@ -62,6 +83,8 @@ services:
     command: ["uv", "run", "streamlit", "run", "src/dashboard/dashboard.py", "--server.address", "0.0.0.0", "--server.runOnSave", "true"]
     volumes:
       - ./src:/app/src
+      - ./images:/app/images
+      - ./.streamlit:/app/.streamlit
     ports:
       - "${DASHBOARD_PORT}:${DASHBOARD_PORT}"
 
@@ -162,11 +185,9 @@ services:
     environment:
       - REDIS_HOST=redis
 
-
 volumes:
   redis_data:
-#  grafana-storage:
-  
+  prefect_data:
 
 networks:
   pynet:

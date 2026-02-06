@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 6,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -44,11 +44,11 @@
               },
               {
                 "color": "yellow",
-                "value": 60
+                "value": 300
               },
               {
                 "color": "green",
-                "value": 120
+                "value": 600
               }
             ]
           },
@@ -88,7 +88,7 @@
             "uid": "dfbbh9gkjsow0d"
           },
           "editorMode": "code",
-          "expr": "(time() - container_start_time_seconds{name=\"$container\"})",
+          "expr": "min (time() - container_start_time_seconds{name=\"$container\"}) by (name)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -447,5 +447,5 @@
   "timezone": "browser",
   "title": "Détails par container",
   "uid": "adxjzb8",
-  "version": 1
+  "version": 2
 }

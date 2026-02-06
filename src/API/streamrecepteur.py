@@ -7,12 +7,15 @@ import redis
 import json 
 import os
 from datetime import datetime
+from prometheus_fastapi_instrumentator import Instrumentator
+import time
 
 app = FastAPI()
 
 # configuration & connexion au conteneur redis
 REDIS_HOST = os.getenv("REDIS_HOST", "redis") 
-r = redis.Redis(host=REDIS_HOST, port=6379, db=0)
+REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
 # chargement du pipeline
 try:
@@ -23,6 +26,14 @@ except Exception:
     # Si le fichier n'existe pas encore on prend v1
     pipeline = joblib.load('src/models/pipeline_v1.joblib')
     print("API : Chargement de la V1 (modèle de secours).")
+    
+# Historique metrique modele v1
+historique_versions = [{"version_id": "V1 (Initiale)",
+        "metrics": {
+            "recall": 87.00,
+            "precision": 63.00,
+            "f1": 73.00,
+            "accuracy": 100.00}}]  
 
 # défini le Json attendu en entree
 class TransmissionRequest(BaseModel):
@@ -71,6 +82,7 @@ async def recevoir_transaction(transaction: TransmissionRequest):
         matrix_stats["vrais_positifs"] += 1
         
     verdict = "FRAUDE" if prediction[0] == 1 else "SAIN"
+    probabilite = pipeline.predict_proba(df)[0][1] * 100  # Probabilité de fraude
     
     # modèle de stockage dans redis au format dictionnaire
     res_to_store = {
@@ -85,7 +97,8 @@ async def recevoir_transaction(transaction: TransmissionRequest):
             "newbalanceDest": float(transaction.newbalanceDest), 
             "isFraud": int(transaction.isFraud),                
             "isFlaggedFraud": int(transaction.isFlaggedFraud),  
-            "verdict": verdict                                  
+            "verdict": verdict,
+            "probabilite": float(round(probabilite, 2))                                  
         }
     # convertir en texte pour Redis
     json_data = json.dumps(res_to_store)
@@ -103,7 +116,19 @@ async def recevoir_transaction(transaction: TransmissionRequest):
         print(f"ALERTE : Fraude détectée ! Montant: {transaction.amount}€")
     else:
         print(f"Transaction saine : {transaction.amount}€")
-    return {"prediction": verdict, "status": "success"}
+    return {"prediction": verdict,"probabilite": f"{round(probabilite, 2)}%", "status": "success"}
+
+# Metriques modele
+@app.post("/update_metrics")
+async def update_metrics(data: dict):
+    global historique_versions
+    
+    historique_versions.insert(0, data)
+    #Uniquement 5 dernieres versions
+    historique_versions = historique_versions[:5]
+    
+    return {"status": "success"}
+
 
 
 @app.get("/report")
@@ -119,7 +144,8 @@ async def report():
         "infos":  {"nb_transactions" : total_traitees},
         "details": fraudes_decodees,
         "nb_fraudes_detectees": len(fraudes_decodees),
-        "matrix": matrix_stats
+        "matrix": matrix_stats,
+        "history": historique_versions
     }
 
 
@@ -132,13 +158,13 @@ async def reload_model():
         # On tente de charger, si ça rate on passe dans le 'except'
         new_pipeline = joblib.load('src/models/pipeline_latest.joblib')
         pipeline = new_pipeline
-        timestamp = os.path.getmtime('src/models/pipeline_latest.joblib')
-        date_formatee = datetime.fromtimestamp(timestamp).strftime('%d/%m %H:%M:%S')
-        return {"status": "success", "modele_du": date_formatee}
+        mtime = os.path.getmtime('src/models/pipeline_latest.joblib')
+        date_formatee = datetime.fromtimestamp(mtime).strftime('%d/%m/%Y %H:%M:%S')
+        return {"status": "success", "modele_du": date_formatee, "version_id": mtime}
     except Exception as e:
         print(f"Erreur rechargement : {e}")
         return {"status": "error", "message": "Conservation de l'ancien modèle"}
 
+#exposition des métriques de FastApi
+Instrumentator().instrument(app).expose(app)
 
-# Pour lancer le serveur : uv run uvicorn src.API.streamrecepteur:app --reload
-# Pour acceder au rapport : http://127.0.0.1:8000/report
