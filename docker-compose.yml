@@ -85,6 +85,7 @@ services:
       - ./src:/app/src
       - ./images:/app/images
       - ./.streamlit:/app/.streamlit
+      - ./state.json:/app/state.json
     ports:
       - "${DASHBOARD_PORT}:${DASHBOARD_PORT}"
 
@@ -177,6 +178,7 @@ services:
     build: . #/api-recepteur
     container_name: worker-bigquery
     command: python src/API/worker_bq.py
+    env_file: .env
     depends_on:
       - redis
     networks:

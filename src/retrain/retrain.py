@@ -6,7 +6,6 @@ from datetime import datetime
 import os
 import requests
 from prefect import task, flow, get_client
-from prefect.context import get_run_context
 from prefect.artifacts import create_markdown_artifact
 import time
 import json
@@ -131,7 +130,7 @@ def retrain_model(nouveau_nombre_lignes):
 * **Ratio fraude utilisé** : {new_ratio:.4f}
 """
     
-    # Cette ligne envoie le tableau dans le dashboard Prefect
+    # poru envoyer le markdown a prefect
     create_markdown_artifact(
         key="training-report",
         markdown=markdown_report,
@@ -183,18 +182,6 @@ def notify_api():
     else:
         print(f"Echec de la mise à jour du modèle. Réponse API : {response.status_code}")
 
-@task(name="Renommage Systeme")
-async def update_run_name(new_name: str):
-    # On récupère l'ID du run actuel
-    ctx = get_run_context()
-    run_id = ctx.flow_run.id
-    
-    # On se connecte à l'API et on met à jour le nom
-    async with get_client() as client:
-        await client.update_flow_run(run_id, name=new_name)
-    
-    print(f"Nom mis à jour officiellement en BDD : {new_name}")
-
 # Le chef d'orchestre
 @flow(name = "Reentrainement du modele de detection de fraude")
 def start_pipeline() :
@@ -205,24 +192,17 @@ def start_pipeline() :
     nouveau = check_new_data()
     print(f"Ancien: {ancien}, Nouveau: {nouveau}")
     
-    nom_run = ""
-    
     if nouveau >= ancien + seuil :
         print("On réentraîne.")
-        nom_run = (f"RETRAIN - {nouveau} lignes")
         retrain_model(nouveau)
         notify_api()
     else :
         print("Pas assez de nouvelles données pour réentraîner le modèle.")
         diff = nouveau - ancien
-        nom_run = f"Check - Delta: +{diff}"
-    
-    if nom_run:
-        update_run_name(nom_run)
 
-#delai poru réentrainement toutes les 2 minutes (intervalle=120 sec)
+#delai poru réentrainement toutes les x minutes 
 if __name__ == "__main__":
-    # 1. On lit la configuration une fois au démarrage du script
+    # Lecture de la config
     try:
         with open('state.json', 'r') as f:
             config = json.load(f)
@@ -233,7 +213,7 @@ if __name__ == "__main__":
 
     print(f"Démarrage de l'automatisation (intervalle : {attente}s)...")
 
-    # 2. On passe cette variable à Prefect
+    # on envoie la variable attente a prefect
     start_pipeline.serve(
         name="reentrainement-fraude-deployment",
         interval=attente
