@@ -6,6 +6,7 @@ import requests
 import os
 import time
 import redis
+import json
 import plotly.express as px
 from pathlib import Path
 import matplotlib.colors as mcolors
@@ -356,11 +357,36 @@ def page_performance_modele():
                 hide_index=True
             )
             st.write("")
-            
+            with open('state.json', 'r') as f:
+                state = json.load(f)
+            seuil = state.get("min_rows_to_retrain")
+            limite = state.get("limit_sql")
+            intervalle = state.get("check_interval_secondes")
+            with st.expander("⚙️ Paramètres d'automatisation (Pipeline MLOps)"):
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.metric("Seuil de réentraînement", f"+{seuil} lignes")
+                    st.caption("Volume de nouvelles données nécessaire pour lancer un cycle.")
+                    
+                with col2:
+                    st.metric("Échantillon sain", f"{limite:,}".replace(',', ' '))
+                    st.caption("Nombre de transactions normales utilisées pour le fit.")
+                    
+                with col3:
+                    st.metric("Vérification", f"{intervalle}s")
+                    st.caption("Fréquence à laquelle Prefect surveille les arrivées BigQuery.")
+
+                st.info(f"""
+                **Stratégie actuelle :** Le modèle est réévalué toutes les {intervalle // 60} minutes. 
+                Dès que {seuil} nouvelles prédictions sont accumulées, un réentraînement XGBoost est déclenché 
+                sur une base de {limite:,} lignes saines mixées aux fraudes historiques.
+                """.replace(',', ' '))
+            st.write("")
             with st.expander("ℹ️ Pourquoi ces écarts ? Comprendre les métriques et l'échantillon"):
-                st.markdown("""
+                st.markdown(f"""
                 ##### 1. Périmètre de l'évaluation (Phase de réentraînement)
-                Les scores affichés dans le tableau comparatif sont calculés lors du réentraînement sur un échantillon de validation (20%). Cet échantillon est extrait d'un jeu de données hybride (200 000 transactions saines + l'intégralité des fraudes).
+                Les scores affichés dans le tableau comparatif sont calculés lors du réentraînement sur un échantillon de validation (20%). Cet échantillon est extrait d'un jeu de données hybride ({limite:,} transactions saines + l'intégralité des fraudes).
                 
                 Comme la proportion de fraudes est artificiellement élevée dans cet échantillon pour optimiser l'apprentissage, les scores théoriques y sont mécaniquement très hauts (Précision > 90%).
 

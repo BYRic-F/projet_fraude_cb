@@ -10,8 +10,8 @@ load_dotenv()
 # connexion à Redis
 REDIS_HOST = os.getenv("REDIS_HOST", "redis-service")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
-PROJECT_ID = os.getenv("GCP_PROJECT_ID", "projet-fraude-paysim")
-DATASET_ID = os.getenv("GCP_DATASET", "paysim_raw")
+PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+DATASET_ID = os.getenv("GCP_DATASET")
 # On crée la connexion. decode_responses=True permet de recevoir du texte 
 # au lieu de données binaires
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)

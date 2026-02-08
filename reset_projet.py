@@ -52,15 +52,15 @@ time.sleep(2)
 subprocess.run(["docker", "stop", "redis-service"])
 print("Arrêt du conteneur redis")
 
-# Réinitialisation de Prefect (Méthode robuste pour Docker)
+# Réinitialisation de Prefect 
 try:
     print("Réinitialisation forcée de la base Prefect...")
     
-    # 1. On arrête le conteneur pour libérer le fichier SQLite
+    # Arret du conteneur
     subprocess.run(["docker", "stop", "prefect-server"], check=True)
     
-    # 2. On supprime le fichier de base de données (chemin standard dans le conteneur)
-    # Note : Le chemin /root/.prefect/prefect.db est le défaut de l'image officielle
+    # supression du fichier de base de données (qui contient les runs flows log etc)
+    #Le chemin est  /root/.prefect/prefect.db
     subprocess.run([
         "docker", "run", "--rm", 
         "--volumes-from", "prefect-server", 
@@ -69,7 +69,7 @@ try:
     
     print("Fichier de base de données supprimé.")
 
-    # 3. On redémarre le conteneur (il recréera une base vide automatiquement)
+    # redemarre conteneur
     subprocess.run(["docker", "start", "prefect-server"], check=True)
     print("Serveur Prefect redémarré avec une base vierge.")
     
