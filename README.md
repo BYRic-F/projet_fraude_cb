@@ -10,7 +10,7 @@ Ce projet a été réalisé dans le cadre de la formation Data Analyst à la Wil
 
 ## Vision Business & storytelling
 
-### Le constat : Une hémorragie financière
+### <u>Le constat : Une hémorragie financière</u>
 
 Imaginez une banque digitale en pleine expansion. Chaque jour, des milliers de clients effectuent des transactions cruciales depuis leur mobile. Cette ouverture numérique est devenue la cible privilégiée des réseaux criminels spécialisés dans le détournement de fonds. Pour notre institution, cette faille de sécurité se chiffrait par des pertes réelles de **plusieurs centaines de millions d'euros par an.**
 
