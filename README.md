@@ -75,29 +75,29 @@ Pour les besoins de la démonstration en temps réel et pour permettre au cycle 
 
 L'application repose sur une architecture micro-services conteneurisée avec Docker.
 
-**La Stack technique**
+**La stack technique**
 
 ![Stack Technique](images/resume_stack.png)
 
-**Justification des Choix Techniques**
+**Justification des choix techniques**
 
 Le choix de cette stack repose sur trois impératifs : la vitesse de détection (temps réel), la fiabilité des données et l'automatisation du cycle de vie du modèle.
 
- **###<u> -> Ingestion & Résilience (Le flux de données)</u>**
+ **###-> Ingestion & résilience (Le flux de données)**
 
  - **FastAPI :** Choisi pour ses performances asynchrones natives, permettant de traiter des milliers de requêtes de transactions par seconde avec une latence minimale.
 
- - **Redis (Buffer d'Ingestion) :** Il joue un rôle de tampon critique. En stockant temporairement les transactions entrantes avant leur envoi vers BigQuery, il protège l'API des variations de latence du réseau. Cela garantit qu'aucune donnée de transaction n'est perdue, même en cas de pic de trafic ou de ralentissement momentané des services Cloud.
+ - **Redis (Buffer d'ingestion) :** Il joue un rôle de tampon critique. En stockant temporairement les transactions entrantes avant leur envoi vers BigQuery, il protège l'API des variations de latence du réseau. Cela garantit qu'aucune donnée de transaction n'est perdue, même en cas de pic de trafic ou de ralentissement momentané des services Cloud.
 
 - **Google BigQuery**: C'est ici que l'historique complet est archivé de manière structurée pour permettre un réentraînement précis du modèle sur des volumes massifs.
 
-**<u>-> Intelligence & Automatisation</u>**
+**-> Intelligence & automatisation**
 
 - **XGBoost :** Sélectionné pour sa gestion efficace des données tabulaires et sa capacité à traiter les valeurs manquantes ou les distributions complexes, surpassant les modèles de deep learning classiques sur ce type de données de fraude. Il permet aussi l'utilisation de CUDA
 
 - **Prefect :** Pilote le cycle de vie complet du ML (récupération BigQuery, gestion des échecs, déploiement). Nous l'avons préféré à Airflow car il est beaucoup moins lourd, plus flexible et permet une orchestration "Python-first" sans la complexité de gestion d'infrastructure d'un serveur Airflow complet.
 
-**<u>-> Observabilité & Interface</u>**
+**-> Observabilité & interface**
 
  - **Prometheus & Grafana :** Assurent le monitoring technique de l'ensemble de l'infrastructure. Prometheus collecte les métriques brutes de chaque conteneur (usage CPU, consommation RAM, latence réseau), tandis que Grafana les transforme en tableaux de bord visuels. Cela permet de surveiller en temps réel les ressources utilisées par le pipeline.
 
