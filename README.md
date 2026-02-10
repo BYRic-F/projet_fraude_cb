@@ -276,13 +276,13 @@ Pour garantir que la qualité du service ne se dégrade jamais, nous avons impl�
 **Fonctionnement observé :**
 
 | Étape | Logique appliquée |
-| :--- | :---: | :--- |
+| :--- | :--- |
 | **Phase d'apprentissage** | Lors de l'initialisation (ou après un reset), le système enregistre les premières performances comme nouveaux records à battre. |
 | **Sécurité active** | Si un réentraînement produit un modèle dont le Recall est inférieur au record (ex: 91.69% vs 93.49%), le pipeline **rejette** automatiquement la mise à jour et conserve l'ancien "champion" en production. |
 
 > **Note technique :** Ce mécanisme protège contre les réentraînements sur des données bruitées ou des régressions de performance. L'API n'est notifiée (`/reload`) que si le statut passe à "Mis en production".
 
-![Statut](statut_modele.png)
+![Statut](images/statut_modele.png)
 
 ---
 
