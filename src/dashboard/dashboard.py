@@ -677,7 +677,7 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
                 st.write(" ")
                 st.write(" ")
                 st.write(" ")
-                st.image("images/histogramme_final_Ksh.png", width=705)
+                st.image("images/histogramme_final_KSh.png", width=705)
                 st.markdown("##### 4. Montants des fraudes par type de transaction")
                 st.markdown("""
 L'analyse de la distribution montre que la majorité des fraudes porte sur des montants significatifs, 
@@ -693,7 +693,7 @@ suggère l'existence d'un **plafond transactionnel** fréquemment atteint par le
             st.markdown("### <u> Flux de données</u>", text_alignment="center", unsafe_allow_html=True)
             st.write("")
             st.markdown("#### Architecture du pipeline de détection de fraude en temps réel", text_alignment="center", unsafe_allow_html=True)
-            st.image("images/pipeline2.png", width=1000)
+            st.image("images/pipeline3.png", width=1000)
 
 # --------------------------- ONGLET L'EQUIPE -----------------------------
 
