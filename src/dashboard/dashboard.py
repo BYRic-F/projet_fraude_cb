@@ -676,7 +676,7 @@ Cette méthode garantit que le modèle est testé sur des données qu'il n'a jam
                 st.write(" ")
                 st.write(" ")
                 st.write(" ")
-                st.image("images/histogramme_final.png", width=705)
+                st.image("images/histogramme_final_2.png", width=705)
                 st.markdown("##### 4. Montants des fraudes par type de transaction")
                 st.markdown("""
 L'analyse de la distribution montre que la majorité des fraudes porte sur des montants significatifs, 
