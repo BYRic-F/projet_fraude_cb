@@ -5,7 +5,8 @@ Ce projet a été réalisé dans le cadre de la formation Data Analyst à la Wil
 
 ## 📺 Démonstration Vidéo
 
-[![Regarder la vidéo](https://youtu.be/oukKv2ohZn0)
+[![Détection de fraude en temps réel](https://img.youtube.com/vi/ouKKv2ohZn0/maxresdefault.jpg)](https://youtu.be/ouKKv2ohZn0)
+*Cliquez sur l'image pour voir la démonstration (2:44)*
 
 ## L'Équipe
 * **Frédéric Bayen** - *Architecture MLOps, BigQuery, Streamlit, FastAPI & Automatisation*
