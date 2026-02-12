@@ -5,7 +5,7 @@ Ce projet a été réalisé dans le cadre de la formation Data Analyst à la Wil
 
 ## Démonstration vidéo
 
-[![Détection de fraude en temps réel](./images/image_youtube.png)]([https://youtu.be/ouKKv2ohZn0](https://youtu.be/oukKv2ohZn0?si=pfWmmesrm2C0MSfI))
+[![Détection de fraude en temps réel](./images/image_youtube.png)](https://youtu.be/ouKKv2ohZn0)
 
 *Cliquez sur l'image pour voir la démonstration (2:44)*
 
