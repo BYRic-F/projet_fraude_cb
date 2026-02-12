@@ -3,6 +3,10 @@
 
 Ce projet a été réalisé dans le cadre de la formation Data Analyst à la Wild Code School. Il simule un flux de transactions bancaires, les analyse via un modèle de Machine Learning (XGBoost) et monitore les performances en temps réel.
 
+## 📺 Démonstration Vidéo
+
+[![Regarder la vidéo](https://youtu.be/oukKv2ohZn0)
+
 ## L'Équipe
 * **Frédéric Bayen** - *Architecture MLOps, BigQuery, Streamlit, FastAPI & Automatisation*
 * **Kenji Victor** - *Streamlit, Grafana & Prometheus, FastAPI*
