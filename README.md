@@ -3,7 +3,7 @@
 
 Ce projet a été réalisé dans le cadre de la formation Data Analyst à la Wild Code School. Il simule un flux de transactions bancaires, les analyse via un modèle de Machine Learning (XGBoost) et monitore les performances en temps réel.
 
-## 📺 Démonstration vidéo
+## Démonstration vidéo
 
 [![Détection de fraude en temps réel](./images/image_youtube.png)](https://youtu.be/ouKKv2ohZn0)
 
