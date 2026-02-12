@@ -7,7 +7,7 @@ Ce projet a été réalisé dans le cadre de la formation Data Analyst à la Wil
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=ouKKv2ohZn0">
-    <img src="https://img.youtube.com/vi/ouKKv2ohZn0/0.jpg" alt="Démonstration Vidéo" width="600">
+    <img src="./images/image_youtube.png" alt="Démonstration Vidéo" width="600">
   </a>
 </p>
 
