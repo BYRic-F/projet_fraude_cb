@@ -156,8 +156,8 @@ Le choix de cette stack repose sur trois impératifs : la vitesse de détection 
 [ SUPERVISION : Prometheus & Grafana ]             [ TABLEAU DE BORD : Streamlit]
 +------------------------------------------+    +------------------------------------------+
 | - Metrics système (CPU/RAM conteneurs)   |    | dashboard.py                             |
-| - Metrics business (Taux de fraude)      |    | - Dashboarding & Alerting Temps Réel     |
-| - Metrics FASTAPI                        |    | - EDA                                    |
+| - Metrics FASTAPI                        |    | - Dashboarding & Alerting Temps Réel     |
+|                                          |    | - EDA                                    |
 +------------------------------------------+    +------------------------------------------+
 ```
 
